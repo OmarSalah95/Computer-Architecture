@@ -28,6 +28,8 @@ class CPU:
             0b10100111:self.CMP,
             0b01000101:self.PUSH,
             0b01000110:self.POP,
+            0b01010000:self.CALL,
+            0b00010001:self.RET,
         }
 
     def load(self):
@@ -78,6 +80,21 @@ class CPU:
                 self.FL|=1
             else:
                 self.FL&=0b11111110
+        elif op=="AND":
+            self.reg[reg_a]&=self.reg[reg_b]
+        elif op=="OR":
+            self.reg[reg_a]|=self.reg[reg_b]
+        elif op =="XOR":
+            self.reg[reg_a]^=self.reg[reg_b]
+        elif op=="NOT":
+            self.reg[reg_a]^=0b11111111
+        elif op=="SHL":
+            self.reg[reg_a]<<1
+            self.reg[reg_a]%=0b100000000
+        elif op=="SHR":
+            self.reg[reg_a]>>1
+        elif op=="MOD":
+            self.reg[reg_a]%=self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -145,6 +162,9 @@ class CPU:
         self.pc+=1
         reg = self.ram_read(self.pc)
         self.ram_write(self.reg[self.sp], self.reg[reg])
+    def push_data(self,data):
+        self.reg[self.sp]-=1
+        self.ram_write(self.reg[self.sp],data)
     
     def POP(self):
         self.pc+=1
@@ -152,6 +172,21 @@ class CPU:
         data = self.ram_read(self.reg[self.sp])
         self.reg[reg]=data
         self.reg[self.sp]+=1
+    def pop_data(self):
+        self.MDR=self.ram_read(self.reg[self.sp])
+        self.reg[self.sp]+=1
+    
+    def CALL(self):
+        self.pc+=1
+        self.push_data(self.pc)
+        register=self.ram_read(self.pc)
+        data = self.reg[register]
+        self.pc=data-1
+    
+    def RET(self):
+        self.pop_data()
+        self.pc=self.MDR
+
 
     def run(self):
         """Run the CPU."""
