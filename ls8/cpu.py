@@ -75,6 +75,13 @@ class CPU:
     
     def ram_write(self, MAR, MDR):
         self.ram[MAR]=MDR
+    
+    def LDI(self):
+        self.pc+=1
+        reg = self.ram_read(self.pc)
+        self.pc+=1
+        val = self.ram_read(self.pc)
+        self.reg[reg] = val
 
     def run(self):
         """Run the CPU."""
