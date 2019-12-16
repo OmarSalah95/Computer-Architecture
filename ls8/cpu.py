@@ -26,6 +26,8 @@ class CPU:
             0b10100000:self.ADD,
             0b10100010:self.MUL,
             0b10100111:self.CMP,
+            0b01000101:self.PUSH,
+            0b01000110:self.POP,
         }
 
     def load(self):
@@ -137,6 +139,19 @@ class CPU:
         self.pc+=1
         reg2=self.ram_read(self.pc)
         self.alu("CMP",reg1,reg2)
+    
+    def PUSH(self):
+        self.reg[self.sp]-=1
+        self.pc+=1
+        reg = self.ram_read(self.pc)
+        self.ram_write(self.reg[self.sp], self.reg[reg])
+    
+    def POP(self):
+        self.pc+=1
+        reg = self.ram_read(self.pc)
+        data = self.ram_read(self.reg[self.sp])
+        self.reg[reg]=data
+        self.reg[self.sp]+=1
 
     def run(self):
         """Run the CPU."""
