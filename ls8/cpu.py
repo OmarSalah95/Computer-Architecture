@@ -19,7 +19,7 @@ class CPU:
         self.MDR=0 # Memory Data Register
         self.FL=0 # Flags given based on CMP opcode
         
-        # List of all the instructions for passing the ALU
+        # List of all the instructions for passing the ALU Binding CPU functionality to args received in run-time
         self.inst={
             0b10000010:self.LDI,
             0b01000111:self.PRN,
@@ -68,7 +68,6 @@ class CPU:
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
-
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
             self.reg[reg_a]%=0b100000000
