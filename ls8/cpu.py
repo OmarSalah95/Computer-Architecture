@@ -12,7 +12,7 @@ class CPU:
         self.reg.append(0xF4) # 256 bit Storage
         self.ram=[0]*255 # This will serve as 256 Bytes of RAM storage
         self.IR=0 # Instruction Register running Instruction
-        # self.sp = 7 I will need this at some point for Pointing to the most recent stack push
+        self.sp = 7 # Stack pointer Pointing at the top of the stack
         """Both Are needed to keep track of where in memory we are, 
             as well as what is being stored"""
         self.MAR=0 # Memory Address Register 
@@ -24,6 +24,8 @@ class CPU:
             0b10000010:self.LDI,
             0b01000111:self.PRN,
             0b10100000:self.ADD,
+            0b10100010:self.MUL,
+            0b10100111:self.CMP,
         }
 
     def load(self):
@@ -33,31 +35,31 @@ class CPU:
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
-        
-        # with open(sys.argv[1],'r') as file:
-        #     for line in file:
-        #         get = line.find("#")
-        #         if get>=0:
-        #             line=line[:get]
-        #         get = line.find('\n')
-        #         if get>=0:
-        #             line=line[:get]
-        #         if len(line)>1:
-        #             line=line.strip()
-        #             program.append(line)
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010, # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111, # PRN R0
+        #     0b00000000,
+        #     0b00000001, # HLT
+        # ]
+        program = []
+        with open(sys.argv[1],'r') as file:
+            for line in file:
+                get = line.find("#")
+                if get>=0:
+                    line=line[:get]
+                get = line.find('\n')
+                if get>=0:
+                    line=line[:get]
+                if len(line)>1:
+                    line=line.strip()
+                    program.append(line)
 
         for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+            self.ram[address]=int(instruction,2)
+            address+=1
 
 
     def alu(self, op, reg_a, reg_b):
@@ -66,7 +68,14 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
             self.reg[reg_a]%=0b100000000
-        #elif op == "SUB": etc
+        elif op == "MUL":
+            self.reg[reg_a]*=self.reg[reg_b]
+            self.reg[reg_a]%=0b100000000
+        elif op =="CMP":
+            if self.reg[reg_a]==self.reg[reg_b]:
+                self.FL|=1
+            else:
+                self.FL&=0b11111110
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -107,6 +116,27 @@ class CPU:
         self.pc+=1
         reg = self.ram[self.pc]
         print(self.reg[reg])
+    
+    def MUL(self):
+        self.pc+=1
+        reg1=self.ram_read(self.pc)
+        self.pc+=1
+        reg2=self.ram_read(self.pc)
+        self.alu('MUL',reg1,reg2)
+    
+    def ADD(self):
+        self.pc+=1
+        reg1=self.ram_read(self.pc)
+        self.pc+=1
+        reg2=self.ram_read(self.pc)
+        self.alu("ADD",reg1,reg2)
+    
+    def CMP(self):
+        self.pc+=1
+        reg1=self.ram_read(self.pc)
+        self.pc+=1
+        reg2=self.ram_read(self.pc)
+        self.alu("CMP",reg1,reg2)
 
     def run(self):
         """Run the CPU."""
