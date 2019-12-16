@@ -35,6 +35,18 @@ class CPU:
             0b00000000,
             0b00000001, # HLT
         ]
+        
+        # with open(sys.argv[1],'r') as file:
+        #     for line in file:
+        #         get = line.find("#")
+        #         if get>=0:
+        #             line=line[:get]
+        #         get = line.find('\n')
+        #         if get>=0:
+        #             line=line[:get]
+        #         if len(line)>1:
+        #             line=line.strip()
+        #             program.append(line)
 
         for instruction in program:
             self.ram[address] = instruction
@@ -82,6 +94,11 @@ class CPU:
         self.pc+=1
         val = self.ram_read(self.pc)
         self.reg[reg] = val
+    
+    def PRN(self):
+        self.pc+=1
+        reg = self.ram[self.pc]
+        print(self.reg[reg])
 
     def run(self):
         """Run the CPU."""
