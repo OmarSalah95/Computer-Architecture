@@ -7,7 +7,17 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.pc=0  # Program Counter address of current executing instruction
+        self.reg=[0]*7 # General Purpose Registers
+        self.reg.append(0xF4) # 256 bit Storage
+        self.ram=[0]*255 # This will serve as 256 Bytes of RAM storage
+        self.IR=0 # Instruction Register running Instruction
+        # self.sp = 7 I will need this at some point for Pointing to the most recent stack push
+        """Both Are needed to keep track of where in memory we are, 
+            as well as what is being stored"""
+        self.MAR=0 # Memory Address Register 
+        self.MDR=0 # Memory Data Register
+        self.FL=0 # Flags given based on CMP opcode
 
     def load(self):
         """Load a program into memory."""
@@ -59,7 +69,20 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    
+    def ram_read(self, MAR):
+        return self.ram[MAR]
+    
+    def ram_write(self, MAR, MDR):
+        self.ram[MAR]=MDR
 
     def run(self):
         """Run the CPU."""
-        pass
+        run = True
+        while run:
+            self.IR = self.ram[self.pc]
+            if self.IR==0b00000001:
+                run=False
+            else:
+                self.inst[self.IR]()
+                self.pc+=1
