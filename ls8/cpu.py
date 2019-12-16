@@ -18,6 +18,13 @@ class CPU:
         self.MAR=0 # Memory Address Register 
         self.MDR=0 # Memory Data Register
         self.FL=0 # Flags given based on CMP opcode
+        
+        # List of all the instructions for passing the ALU
+        self.inst={
+            0b10000010:self.LDI,
+            0b01000111:self.PRN,
+            0b10100000:self.ADD,
+        }
 
     def load(self):
         """Load a program into memory."""
@@ -58,6 +65,7 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
+            self.reg[reg_a]%=0b100000000
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
