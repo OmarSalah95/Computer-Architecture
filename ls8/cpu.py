@@ -31,6 +31,8 @@ class CPU:
             0b01010000:self.CALL,
             0b00010001:self.RET,
             0b01010100:self.JMP,
+            0b01010110:self.JNE,
+            # 0b01010101:self.JEQ,
         }
 
     def load(self):
@@ -192,6 +194,14 @@ class CPU:
         reg_with_dest = self.ram_read(self.pc)
         self.pc = self.reg[reg_with_dest]
         self.pc-=1
+
+    def JNE(self):
+        test_against = self.FL & 0b00000001
+        if test_against==0:
+            self.JMP()
+        else:
+            self.pc+=1
+
 
 
     def run(self):
