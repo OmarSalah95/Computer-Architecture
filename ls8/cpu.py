@@ -32,7 +32,7 @@ class CPU:
             0b00010001:self.RET,
             0b01010100:self.JMP,
             0b01010110:self.JNE,
-            # 0b01010101:self.JEQ,
+            0b01010101:self.JEQ,
         }
 
     def load(self):
@@ -202,7 +202,12 @@ class CPU:
         else:
             self.pc+=1
 
-
+    def JEQ(self):
+        test_against = self.FL & 0b00000001
+        if test_against==1:
+            self.JMP()
+        else:
+            self.pc+=1
 
     def run(self):
         """Run the CPU."""
