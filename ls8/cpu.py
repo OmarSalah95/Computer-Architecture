@@ -209,6 +209,14 @@ class CPU:
         else:
             self.pc+=1
 
+    
+    def ADDI(self):
+        self.pc+=1
+        dest = self.ram_read(self.pc)
+        self.pc+=1
+        to_add = self.ram_read(self.pc)
+        self.reg[dest]+=to_add
+    
     def run(self):
         """Run the CPU."""
         run = True
