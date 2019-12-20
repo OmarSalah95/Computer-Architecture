@@ -30,6 +30,7 @@ class CPU:
             0b01000110:self.POP,
             0b01010000:self.CALL,
             0b00010001:self.RET,
+            0b01010100:self.JMP,
         }
 
     def load(self):
@@ -185,6 +186,12 @@ class CPU:
     def RET(self):
         self.pop_data()
         self.pc=self.MDR
+    
+    def JMP(self):
+        self.pc+=1
+        reg_with_dest = self.ram_read(self.pc)
+        self.pc = self.reg[reg_with_dest]
+        self.pc-=1
 
 
     def run(self):
