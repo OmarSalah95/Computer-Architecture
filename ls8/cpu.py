@@ -33,6 +33,7 @@ class CPU:
             0b01010100:self.JMP,
             0b01010110:self.JNE,
             0b01010101:self.JEQ,
+            0b10000100:self.ST,
         }
 
     def load(self):
@@ -208,6 +209,21 @@ class CPU:
             self.JMP()
         else:
             self.pc+=1
+
+    def ST(self):
+        self.pc+=1
+        dest=self.ram_read(self.pc)
+        self.pc+=1
+        src=self.ram_read(self.pc)
+        self.ram_write(self.reg[dest],self.reg[src])
+        
+    
+    def PRA(self):
+        self.pc+=1
+        reg_address = self.ram_read(self.pc)
+        self.pc+=1
+        ascii_num = self.reg[reg_address]
+        print(chr(ascii_num))
 
     
     def ADDI(self):
